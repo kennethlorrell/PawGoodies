@@ -7,14 +7,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-val WarmOrange = Color(0xFFFFA726)
-val SoftGreen = Color(0xFF66BB6A)
-val LightBlue = Color(0xFF42A5F5)
-val PastelYellow = Color(0xFFFFEB3B)
-val OffWhite = Color(0xFFFAFAFA)
-val DarkGray = Color(0xFF424242)
-val LightGray = Color(0xFF757575)
-
 val LightColors = lightColorScheme(
     primary = WarmOrange,
     onPrimary = Color.White,
