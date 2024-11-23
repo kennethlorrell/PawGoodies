@@ -1,33 +1,37 @@
 package com.deepdark.pawgoodies
 
-import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.deepdark.pawgoodies.components.BottomNavBar
 import com.deepdark.pawgoodies.components.TopBar
 import com.deepdark.pawgoodies.pages.CartPage
 import com.deepdark.pawgoodies.pages.HomePage
 import com.deepdark.pawgoodies.pages.LoginPage
-import com.deepdark.pawgoodies.pages.Page
+import com.deepdark.pawgoodies.data.NavigationPage
 import com.deepdark.pawgoodies.pages.PetProfilePage
 import com.deepdark.pawgoodies.pages.RegistrationPage
 import com.deepdark.pawgoodies.pages.UserProfilePage
 import com.deepdark.pawgoodies.pages.WishlistPage
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 
 @Composable
-fun App(
-    navController: NavHostController,
-    scrollState: ScrollState,
-    currentUser: FirebaseUser?
-) {
+fun App() {
+    val auth = FirebaseAuth.getInstance()
+    val currentUser = remember { auth.currentUser }
+
+    val navController = rememberNavController()
+    val scrollState = rememberScrollState()
+
     Scaffold(
         topBar = {
             TopBar()
@@ -36,42 +40,47 @@ fun App(
             BottomNavBar(navController)
         }
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = if (currentUser != null) Page.Home.route else Page.Login.route,
+        Box(
             modifier = Modifier
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
+                .fillMaxSize()
         ) {
-            composable(Page.Login.route) {
-                LoginPage(
-                    onLoginSuccess = { navController.navigate(Page.Home.route) },
-                    onRegisterClick = { navController.navigate(Page.Registration.route) }
-                )
-            }
+            NavHost(
+                navController = navController,
+                startDestination = if (currentUser != null) NavigationPage.Home.route else NavigationPage.Login.route,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(NavigationPage.Login.route) {
+                    LoginPage(
+                        onLoginSuccess = { navController.navigate(NavigationPage.Home.route) },
+                        onRegisterClick = { navController.navigate(NavigationPage.Registration.route) }
+                    )
+                }
 
-            composable(Page.Registration.route) {
-                RegistrationPage(
-                    onRegisterSuccess = { navController.navigate(Page.Home.route) },
-                    onLoginClick = { navController.navigate(Page.Login.route) }
-                )
-            }
+                composable(NavigationPage.Registration.route) {
+                    RegistrationPage(
+                        onRegisterSuccess = { navController.navigate(NavigationPage.Home.route) },
+                        onLoginClick = { navController.navigate(NavigationPage.Login.route) }
+                    )
+                }
 
-            composable(Page.Home.route) {
-                HomePage(
-                    onLogout = {
-                        FirebaseAuth.getInstance().signOut()
-                        navController.navigate(Page.Login.route) {
-                            popUpTo(Page.Home.route) { inclusive = true }
+                composable(NavigationPage.Home.route) {
+                    HomePage(
+                        onLogout = {
+                            FirebaseAuth.getInstance().signOut()
+                            navController.navigate(NavigationPage.Login.route) {
+                                popUpTo(NavigationPage.Home.route) { inclusive = true }
+                            }
                         }
-                    }
-                )
-            }
+                    )
+                }
 
-            composable(Page.Cart.route) { CartPage() }
-            composable(Page.Wishlist.route) { WishlistPage() }
-            composable(Page.PetProfile.route) { PetProfilePage() }
-            composable(Page.UserProfile.route) { UserProfilePage() }
+                composable(NavigationPage.Cart.route) { CartPage() }
+                composable(NavigationPage.Wishlist.route) { WishlistPage() }
+                composable(NavigationPage.PetProfile.route) { PetProfilePage() }
+                composable(NavigationPage.UserProfile.route) { UserProfilePage() }
+            }
         }
     }
 }
