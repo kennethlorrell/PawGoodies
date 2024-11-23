@@ -1,10 +1,14 @@
 package com.deepdark.pawgoodies
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.union
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -30,7 +34,6 @@ fun App() {
     val currentUser = remember { auth.currentUser }
 
     val navController = rememberNavController()
-    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
@@ -42,14 +45,12 @@ fun App() {
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .verticalScroll(scrollState)
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
             NavHost(
                 navController = navController,
                 startDestination = if (currentUser != null) NavigationPage.Home.route else NavigationPage.Login.route,
-                modifier = Modifier.padding(innerPadding)
             ) {
                 composable(NavigationPage.Login.route) {
                     LoginPage(
@@ -67,6 +68,16 @@ fun App() {
 
                 composable(NavigationPage.Home.route) {
                     HomePage(
+                        onCategorySelected = {  }
+                    )
+                }
+
+                composable(NavigationPage.Cart.route) { CartPage() }
+                composable(NavigationPage.Wishlist.route) { WishlistPage() }
+                composable(NavigationPage.PetProfile.route) { PetProfilePage() }
+
+                composable(NavigationPage.UserProfile.route) {
+                    UserProfilePage(
                         onLogout = {
                             FirebaseAuth.getInstance().signOut()
                             navController.navigate(NavigationPage.Login.route) {
@@ -75,11 +86,6 @@ fun App() {
                         }
                     )
                 }
-
-                composable(NavigationPage.Cart.route) { CartPage() }
-                composable(NavigationPage.Wishlist.route) { WishlistPage() }
-                composable(NavigationPage.PetProfile.route) { PetProfilePage() }
-                composable(NavigationPage.UserProfile.route) { UserProfilePage() }
             }
         }
     }
