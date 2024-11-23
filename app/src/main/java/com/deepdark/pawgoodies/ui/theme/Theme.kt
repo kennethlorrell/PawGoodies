@@ -10,9 +10,10 @@ import androidx.compose.ui.graphics.Color
 val LightColors = lightColorScheme(
     primary = WarmOrange,
     onPrimary = Color.White,
+    inversePrimary = VibrantComplimentary,
     secondary = SoftGreen,
     onSecondary = Color.White,
-    tertiary = LightBlue,
+    tertiary = VibrantComplimentary,
     onTertiary = Color.White,
     error = PastelYellow,
     onError = DarkGray,
@@ -21,12 +22,13 @@ val LightColors = lightColorScheme(
     surface = OffWhite,
     onSurface = DarkGray,
     surfaceVariant = LightGray,
-    outline = LightGray
+    outline = LightGray,
 )
 
 val DarkColors = darkColorScheme(
     primary = WarmOrange,
     onPrimary = Color.Black,
+    inversePrimary = VibrantComplimentary,
     secondary = SoftGreen,
     onSecondary = Color.Black,
     tertiary = LightBlue,
