@@ -23,7 +23,7 @@ fun HomePage(onLogout: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Ласкаво просимо до PawGoods!", style = MaterialTheme.typography.headlineMedium)
+        Text("Ласкаво просимо до PawGoodies!", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
 

@@ -37,11 +37,11 @@ fun TopBar() {
                 modifier = Modifier
                     .size(40.dp)
                     .padding(end = 8.dp),
-                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Black)
+                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
             )
             Text(
                 text = "PawGoodies",
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.ExtraBold
             )

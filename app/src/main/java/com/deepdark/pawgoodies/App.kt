@@ -9,11 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.deepdark.pawgoodies.components.BottomNavBar
 import com.deepdark.pawgoodies.components.TopBar
+import com.deepdark.pawgoodies.pages.CartPage
 import com.deepdark.pawgoodies.pages.HomePage
 import com.deepdark.pawgoodies.pages.LoginPage
 import com.deepdark.pawgoodies.pages.Page
+import com.deepdark.pawgoodies.pages.PetProfilePage
 import com.deepdark.pawgoodies.pages.RegistrationPage
+import com.deepdark.pawgoodies.pages.UserProfilePage
+import com.deepdark.pawgoodies.pages.WishlistPage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -26,6 +31,9 @@ fun App(
     Scaffold(
         topBar = {
             TopBar()
+        },
+        bottomBar = {
+            BottomNavBar(navController)
         }
     ) { innerPadding ->
         NavHost(
@@ -59,6 +67,11 @@ fun App(
                     }
                 )
             }
+
+            composable(Page.Cart.route) { CartPage() }
+            composable(Page.Wishlist.route) { WishlistPage() }
+            composable(Page.PetProfile.route) { PetProfilePage() }
+            composable(Page.UserProfile.route) { UserProfilePage() }
         }
     }
 }

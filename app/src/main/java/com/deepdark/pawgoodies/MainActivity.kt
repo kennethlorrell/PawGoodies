@@ -36,7 +36,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold { outerPadding ->
-                        Box(modifier = Modifier.padding(outerPadding)) {
+                        Box(
+                            modifier = Modifier
+                                .padding(outerPadding)
+                        ) {
                             App(
                                 navController = navController,
                                 scrollState,
