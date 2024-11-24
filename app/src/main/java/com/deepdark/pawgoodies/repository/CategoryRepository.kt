@@ -7,26 +7,17 @@ import com.deepdark.pawgoodies.data.Category
 class CategoryRepository(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
-
     suspend fun fetchCategories(): List<Category> {
-        val categories = mutableListOf<Category>()
+        val snapshot = firestore.collection("categories")
+            .get()
+            .await()
 
-        try {
-            val snapshot = firestore.collection("categories")
-                .get()
-                .await()
-
-            for (document in snapshot.documents) {
-                val id = document.id
-                val name = document.getString("name") ?: "Unknown"
-                val image = document.getString("image")
-
-                categories.add(Category(id, name, image))
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        return snapshot.documents.map { document ->
+            Category(
+                id = document.id,
+                name = document.getString("name") ?: "",
+                image = document.getString("image") ?: ""
+            )
         }
-
-        return categories
     }
 }

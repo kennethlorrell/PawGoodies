@@ -1,18 +1,14 @@
 package com.deepdark.pawgoodies
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.union
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,10 +22,13 @@ import com.deepdark.pawgoodies.pages.PetProfilePage
 import com.deepdark.pawgoodies.pages.RegistrationPage
 import com.deepdark.pawgoodies.pages.UserProfilePage
 import com.deepdark.pawgoodies.pages.WishlistPage
+import com.deepdark.pawgoodies.viewmodel.SharedViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun App() {
+    val sharedViewModel: SharedViewModel = hiltViewModel()
+
     val auth = FirebaseAuth.getInstance()
     val currentUser = remember { auth.currentUser }
 
@@ -68,7 +67,9 @@ fun App() {
 
                 composable(NavigationPage.Home.route) {
                     HomePage(
-                        onCategorySelected = {  }
+                        categories = sharedViewModel.categories.collectAsState().value,
+                        products = sharedViewModel.products.collectAsState().value,
+                        onProductClick = {  }
                     )
                 }
 

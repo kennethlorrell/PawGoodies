@@ -1,6 +1,7 @@
 package com.deepdark.pawgoodies.di
 
 import com.deepdark.pawgoodies.repository.CategoryRepository
+import com.deepdark.pawgoodies.repository.ProductRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -22,5 +23,11 @@ object RepositoryModule {
     @Singleton
     fun provideCategoryRepository(firestore: FirebaseFirestore): CategoryRepository {
         return CategoryRepository(firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductRepository(firestore: FirebaseFirestore): ProductRepository {
+        return ProductRepository(firestore)
     }
 }
