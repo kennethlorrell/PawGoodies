@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.deepdark.pawgoodies.data.Product
+import com.deepdark.pawgoodies.data.entities.Product
 
 @Composable
 fun ProductCard(

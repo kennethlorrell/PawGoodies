@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -22,15 +22,13 @@ import com.deepdark.pawgoodies.pages.PetProfilePage
 import com.deepdark.pawgoodies.pages.RegistrationPage
 import com.deepdark.pawgoodies.pages.UserProfilePage
 import com.deepdark.pawgoodies.pages.WishlistPage
-import com.deepdark.pawgoodies.viewmodel.SharedViewModel
-import com.google.firebase.auth.FirebaseAuth
+import com.deepdark.pawgoodies.data.viewmodel.SharedViewModel
 
 @Composable
 fun App() {
     val sharedViewModel: SharedViewModel = hiltViewModel()
-
-    val auth = FirebaseAuth.getInstance()
-    val currentUser = remember { auth.currentUser }
+    val categories by sharedViewModel.categories.observeAsState(emptyList())
+    val products by sharedViewModel.products.observeAsState(emptyList())
 
     val navController = rememberNavController()
 
@@ -49,7 +47,7 @@ fun App() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = if (currentUser != null) NavigationPage.Home.route else NavigationPage.Login.route,
+                startDestination = NavigationPage.Home.route
             ) {
                 composable(NavigationPage.Login.route) {
                     LoginPage(
@@ -67,8 +65,8 @@ fun App() {
 
                 composable(NavigationPage.Home.route) {
                     HomePage(
-                        categories = sharedViewModel.categories.collectAsState().value,
-                        products = sharedViewModel.products.collectAsState().value,
+                        categories = categories,
+                        products = products,
                         onProductClick = {  }
                     )
                 }
@@ -80,7 +78,7 @@ fun App() {
                 composable(NavigationPage.UserProfile.route) {
                     UserProfilePage(
                         onLogout = {
-                            FirebaseAuth.getInstance().signOut()
+                            // TODO: Implement logout
                             navController.navigate(NavigationPage.Login.route) {
                                 popUpTo(NavigationPage.Home.route) { inclusive = true }
                             }

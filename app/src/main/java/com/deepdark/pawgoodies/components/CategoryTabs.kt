@@ -11,13 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.deepdark.pawgoodies.data.Category
+import com.deepdark.pawgoodies.data.entities.Category
 
 @Composable
 fun CategoryTabs(
     categories: List<Category>,
-    selectedCategoryId: String?,
-    onCategorySelected: (String?) -> Unit
+    selectedCategoryId: Int?,
+    onCategorySelected: (Int?) -> Unit
 ) {
     val selectedIndex = categories.indexOfFirst { it.id == selectedCategoryId }.takeIf { it >= 0 } ?: 0
 

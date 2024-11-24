@@ -19,8 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.deepdark.pawgoodies.components.StyledTextField
-import com.deepdark.pawgoodies.data.getCustomErrorMessage
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun RegistrationPage(
@@ -55,16 +53,7 @@ fun RegistrationPage(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            FirebaseAuth.getInstance()
-                .createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        onRegisterSuccess()
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    errorMessage = getCustomErrorMessage(exception)
-                }
+            // TODO: Implement registration
         }) {
             Text("Зареєструватися")
         }
