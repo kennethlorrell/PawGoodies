@@ -10,7 +10,7 @@ val MIGRATION_0_1 = object : Migration(0, 1) {
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 email TEXT NOT NULL,
                 password TEXT NOT NULL,
-                name TEXT NOT NULL
+                name TEXT
             )
         """)
 

@@ -1,4 +1,4 @@
-package com.deepdark.pawgoodies.data.viewmodel
+package com.deepdark.pawgoodies.data.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.deepdark.pawgoodies.data.entities.Product
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDao {
@@ -22,6 +23,9 @@ interface ProductDao {
 
     @Query("SELECT * FROM products WHERE id = :id")
     suspend fun getProductById(id: Int): Product?
+
+    @Query("SELECT * FROM products WHERE id = :productId")
+    fun getProductByIdLive(productId: Int): Flow<Product?>
 
     @Query("SELECT * FROM products WHERE categoryId = :categoryId")
     suspend fun getProductsByCategory(categoryId: Int): List<Product>

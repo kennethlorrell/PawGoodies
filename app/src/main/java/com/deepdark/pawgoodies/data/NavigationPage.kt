@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.Pets
+import androidx.compose.material.icons.outlined.Satellite
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -18,5 +19,6 @@ sealed class NavigationPage(val route: String, val title: String, val icon: Imag
     object Cart : NavigationPage("cart", "Кошик", Icons.Outlined.ShoppingCart)
     object Wishlist : NavigationPage("wishlist", "Список бажань", Icons.Outlined.FavoriteBorder)
     object PetProfile : NavigationPage("pet_profile", "Профіль тварини", Icons.Outlined.Pets)
-    object UserProfile : NavigationPage("user_profile", "Профіль", Icons.Outlined.AccountCircle)
+    object UserProfile : NavigationPage("user_profile", "Профіль користувача", Icons.Outlined.AccountCircle)
+    object ProductDetail : NavigationPage("productDetail", "Детальна сторінка продукту", Icons.Outlined.Satellite)
 }
