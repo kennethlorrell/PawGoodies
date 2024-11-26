@@ -18,7 +18,7 @@ sealed class NavigationPage(val route: String, val title: String, val icon: Imag
     object Home : NavigationPage("home", "Головна", Icons.Outlined.Home)
     object Cart : NavigationPage("cart", "Кошик", Icons.Outlined.ShoppingCart)
     object Wishlist : NavigationPage("wishlist", "Список бажань", Icons.Outlined.FavoriteBorder)
-    object PetProfile : NavigationPage("pet_profile", "Профіль тварини", Icons.Outlined.Pets)
-    object UserProfile : NavigationPage("user_profile", "Профіль користувача", Icons.Outlined.AccountCircle)
+    object PetProfile : NavigationPage("pet_profile", "Профіль пестунчика", Icons.Outlined.Pets)
+    object UserProfile : NavigationPage("user_profile", "Мій профіль", Icons.Outlined.AccountCircle)
     object ProductDetail : NavigationPage("productDetail", "Детальна сторінка продукту", Icons.Outlined.Satellite)
 }

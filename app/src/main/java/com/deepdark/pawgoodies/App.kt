@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
@@ -27,11 +29,19 @@ import com.deepdark.pawgoodies.pages.WishlistPage
 import androidx.navigation.compose.rememberNavController
 import com.deepdark.pawgoodies.components.BottomNavBar
 import com.deepdark.pawgoodies.components.TopBar
+import com.deepdark.pawgoodies.data.viewmodels.AuthState
+import com.deepdark.pawgoodies.data.viewmodels.AuthViewModel
 import com.deepdark.pawgoodies.data.viewmodels.SharedViewModel
 
 @Composable
 fun App() {
     val sharedViewModel: SharedViewModel = hiltViewModel()
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.authState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        authViewModel.restoreSession()
+    }
 
     val categories by sharedViewModel.categories.observeAsState(emptyList())
     val products by sharedViewModel.products.observeAsState(emptyList())
@@ -43,7 +53,9 @@ fun App() {
             TopBar()
         },
         bottomBar = {
-            BottomNavBar(navController)
+            if (authState is AuthState.Authenticated) {
+                BottomNavBar(navController)
+            }
         }
     ) { innerPadding ->
         Box(
@@ -53,10 +65,14 @@ fun App() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = NavigationPage.Home.route
+                startDestination = when (authState) {
+                    is AuthState.Authenticated -> NavigationPage.Home.route
+                    else -> NavigationPage.Login.route
+                }
             ) {
                 composable(NavigationPage.Login.route) {
                     LoginPage(
+                        authViewModel = authViewModel,
                         onLoginSuccess = { navController.navigate(NavigationPage.Home.route) },
                         onRegisterClick = { navController.navigate(NavigationPage.Registration.route) }
                     )
@@ -69,56 +85,59 @@ fun App() {
                     )
                 }
 
-                composable(NavigationPage.Home.route) {
-                    HomePage(
-                        categories = categories,
-                        products = products,
-                        onProductClick = { product ->
-                            navController.navigate("${NavigationPage.ProductDetail.route}/${product.id}")
-                        }
-                    )
-                }
-
-                composable(NavigationPage.Cart.route) { CartPage() }
-                composable(NavigationPage.Wishlist.route) { WishlistPage() }
-                composable(NavigationPage.PetProfile.route) { PetProfilePage() }
-
-                composable(NavigationPage.UserProfile.route) {
-                    UserProfilePage(
-                        onLogout = {
-                            // TODO: Implement logout
-                            navController.navigate(NavigationPage.Login.route) {
-                                popUpTo(NavigationPage.Home.route) { inclusive = true }
+                if (authState is AuthState.Authenticated) {
+                    composable(NavigationPage.Home.route) {
+                        HomePage(
+                            categories = categories,
+                            products = products,
+                            onProductClick = { product ->
+                                navController.navigate("${NavigationPage.ProductDetail.route}/${product.id}")
                             }
-                        }
-                    )
-                }
-
-                composable(
-                    route = "productDetail/{productId}",
-                    arguments = listOf(navArgument("productId") { type = NavType.IntType })
-                ) { backStackEntry ->
-                    val productId = backStackEntry.arguments?.getInt("productId")
-
-                    if (productId == null) {
-                        ProductNotFound(
-                            errorMessage = "Помилка: продукт не знайдено",
-                            onBack = { navController.popBackStack() }
                         )
-                    } else {
-                        val product by sharedViewModel.getProductById(productId).observeAsState()
+                    }
 
-                        when {
-                            product == null -> {
-                                LoadingPlaceholder()
+                    composable(NavigationPage.Cart.route) { CartPage() }
+                    composable(NavigationPage.Wishlist.route) { WishlistPage() }
+                    composable(NavigationPage.PetProfile.route) { PetProfilePage() }
+
+                    composable(NavigationPage.UserProfile.route) {
+                        UserProfilePage(
+                            onLogout = {
+                                authViewModel.logout()
+
+                                navController.navigate(NavigationPage.Login.route) {
+                                    popUpTo(NavigationPage.Home.route) { inclusive = true }
+                                }
                             }
-                            else -> {
-                                ProductDetailsPage(
-                                    product = product!!,
-                                    onBack = { navController.popBackStack() },
-                                    onAddToCart = { /* TODO: Implement cart */ },
-                                    onAddToWishlist = { /* TODO: Implement wishlist */ }
-                                )
+                        )
+                    }
+
+                    composable(
+                        route = "productDetail/{productId}",
+                        arguments = listOf(navArgument("productId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val productId = backStackEntry.arguments?.getInt("productId")
+
+                        if (productId == null) {
+                            ProductNotFound(
+                                errorMessage = "Помилка: продукт не знайдено",
+                                onBack = { navController.popBackStack() }
+                            )
+                        } else {
+                            val product by sharedViewModel.getProductById(productId).observeAsState()
+
+                            when {
+                                product == null -> {
+                                    LoadingPlaceholder()
+                                }
+                                else -> {
+                                    ProductDetailsPage(
+                                        product = product!!,
+                                        onBack = { navController.popBackStack() },
+                                        onAddToCart = { /* TODO: Implement cart */ },
+                                        onAddToWishlist = { /* TODO: Implement wishlist */ }
+                                    )
+                                }
                             }
                         }
                     }

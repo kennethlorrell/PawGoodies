@@ -25,7 +25,7 @@ interface ProductDao {
     suspend fun getProductById(id: Int): Product?
 
     @Query("SELECT * FROM products WHERE id = :productId")
-    fun getProductByIdLive(productId: Int): Flow<Product?>
+    fun getProductByIdLive(productId: Int): LiveData<Product?>
 
     @Query("SELECT * FROM products WHERE categoryId = :categoryId")
     suspend fun getProductsByCategory(categoryId: Int): List<Product>
