@@ -85,59 +85,57 @@ fun App() {
                     )
                 }
 
-                if (authState is AuthState.Authenticated) {
-                    composable(NavigationPage.Home.route) {
-                        HomePage(
-                            categories = categories,
-                            products = products,
-                            onProductClick = { product ->
-                                navController.navigate("${NavigationPage.ProductDetail.route}/${product.id}")
+                composable(NavigationPage.Home.route) {
+                    HomePage(
+                        categories = categories,
+                        products = products,
+                        onProductClick = { product ->
+                            navController.navigate("${NavigationPage.ProductDetail.route}/${product.id}")
+                        }
+                    )
+                }
+
+                composable(NavigationPage.Cart.route) { CartPage() }
+                composable(NavigationPage.Wishlist.route) { WishlistPage() }
+                composable(NavigationPage.PetProfile.route) { PetProfilePage() }
+
+                composable(NavigationPage.UserProfile.route) {
+                    UserProfilePage(
+                        onLogout = {
+                            authViewModel.logout()
+
+                            navController.navigate(NavigationPage.Login.route) {
+                                popUpTo(NavigationPage.Home.route) { inclusive = true }
                             }
+                        }
+                    )
+                }
+
+                composable(
+                    route = "productDetail/{productId}",
+                    arguments = listOf(navArgument("productId") { type = NavType.IntType })
+                ) { backStackEntry ->
+                    val productId = backStackEntry.arguments?.getInt("productId")
+
+                    if (productId == null) {
+                        ProductNotFound(
+                            errorMessage = "Помилка: продукт не знайдено",
+                            onBack = { navController.popBackStack() }
                         )
-                    }
+                    } else {
+                        val product by sharedViewModel.getProductById(productId).observeAsState()
 
-                    composable(NavigationPage.Cart.route) { CartPage() }
-                    composable(NavigationPage.Wishlist.route) { WishlistPage() }
-                    composable(NavigationPage.PetProfile.route) { PetProfilePage() }
-
-                    composable(NavigationPage.UserProfile.route) {
-                        UserProfilePage(
-                            onLogout = {
-                                authViewModel.logout()
-
-                                navController.navigate(NavigationPage.Login.route) {
-                                    popUpTo(NavigationPage.Home.route) { inclusive = true }
-                                }
+                        when {
+                            product == null -> {
+                                LoadingPlaceholder()
                             }
-                        )
-                    }
-
-                    composable(
-                        route = "productDetail/{productId}",
-                        arguments = listOf(navArgument("productId") { type = NavType.IntType })
-                    ) { backStackEntry ->
-                        val productId = backStackEntry.arguments?.getInt("productId")
-
-                        if (productId == null) {
-                            ProductNotFound(
-                                errorMessage = "Помилка: продукт не знайдено",
-                                onBack = { navController.popBackStack() }
-                            )
-                        } else {
-                            val product by sharedViewModel.getProductById(productId).observeAsState()
-
-                            when {
-                                product == null -> {
-                                    LoadingPlaceholder()
-                                }
-                                else -> {
-                                    ProductDetailsPage(
-                                        product = product!!,
-                                        onBack = { navController.popBackStack() },
-                                        onAddToCart = { /* TODO: Implement cart */ },
-                                        onAddToWishlist = { /* TODO: Implement wishlist */ }
-                                    )
-                                }
+                            else -> {
+                                ProductDetailsPage(
+                                    product = product!!,
+                                    onBack = { navController.popBackStack() },
+                                    onAddToCart = { /* TODO: Implement cart */ },
+                                    onAddToWishlist = { /* TODO: Implement wishlist */ }
+                                )
                             }
                         }
                     }

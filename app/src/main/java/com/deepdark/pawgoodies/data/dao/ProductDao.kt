@@ -5,7 +5,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.deepdark.pawgoodies.data.entities.Product
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDao {

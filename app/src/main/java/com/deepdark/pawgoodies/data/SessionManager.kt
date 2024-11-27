@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +30,10 @@ class SessionManager(private val context: Context) {
     val isLoggedIn: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[IS_LOGGED_IN_KEY] ?: false
     }
+
+    val userIdLiveData: LiveData<Int?> = userId.asLiveData()
+
+    val isLoggedInLiveData: LiveData<Boolean> = isLoggedIn.asLiveData()
 
     suspend fun saveUserSession(userId: Int) {
         context.dataStore.edit { preferences ->

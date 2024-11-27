@@ -19,7 +19,7 @@ fun seedDatabase(db: AppDatabase) {
 
 private suspend fun insertManufacturers(db: AppDatabase) {
     val manufacturers = mapOf(
-        "PetFood" to listOf("Royal Canin", "Purina", "Hill's", "Acana", "Orijen", "Whiskas", "Pedigree", "Farmina", "Brit", "Eukanuba"),
+        "Food" to listOf("Royal Canin", "Purina", "Hill's", "Acana", "Orijen", "Whiskas", "Pedigree", "Farmina", "Brit", "Eukanuba"),
         "Grooming" to listOf("Tropiclean", "PetHead", "Bio-Groom", "Furminator", "Espree"),
         "Accessories" to listOf("Trixie", "K&H", "PetSafe", "Hunter", "Ferplast"),
         "Toys" to listOf("KONG", "Outward Hound", "Chuckit!", "West Paw", "Nerf Dog")
@@ -62,10 +62,9 @@ private suspend fun insertCategories(db: AppDatabase) {
 
 private suspend fun insertProducts(db: AppDatabase) {
     val flavours = listOf(
-        "з лососем", "з куркою", "з яловичиною", "з кроликом", "з індичкою",
-        "з рибою", "з качкою", "з ягнятиною", "з бананом", "з манго",
-        "з сиром", "з медом", "з яблуками", "з овочами", "з горіхами",
-        "з м’ятою", "з лавандою", "з ромашкою", "з кокосом", "з шоколадом"
+        "з лососем", "з куркою", "з яловичиною",
+        "з кроликом", "з індичкою", "з тунцем",
+        "з качкою", "з ягням", "з креветками"
     )
 
     val groomingItems = listOf("Шампунь", "Спрей для догляду", "Гребінець", "Засіб для чищення лап", "Кондиціонер")
@@ -75,7 +74,8 @@ private suspend fun insertProducts(db: AppDatabase) {
     categories.forEach { category ->
         val categoryId = category.id
         when (category.name) {
-            "Корм", "Ласощі" -> createFoodProducts(db, categoryId, flavours)
+            "Корм" -> createFoodProducts(db, categoryId, flavours, "Корм")
+            "Ласощі" -> createFoodProducts(db, categoryId, flavours, "Ласощі")
             "Догляд" -> createGeneralProducts(db, categoryId, groomingItems, "Grooming")
             "Аксесуари" -> createGeneralProducts(db, categoryId, accessoryItems, "Accessories")
             "Іграшки" -> createToyProducts(db, categoryId)
@@ -83,8 +83,10 @@ private suspend fun insertProducts(db: AppDatabase) {
     }
 }
 
-private suspend fun createFoodProducts(db: AppDatabase, categoryId: Int, flavours: List<String>) {
-    val manufacturers = db.manufacturerDao().getAllManufacturers().filter { it.name in listOf("Royal Canin", "Purina") }
+private suspend fun createFoodProducts(db: AppDatabase, categoryId: Int, flavours: List<String>, type: String) {
+    val manufacturers = db.manufacturerDao().getAllManufacturers().filter { it.name in listOf(
+        "Royal Canin", "Purina", "Hill's", "Acana", "Orijen", "Whiskas", "Pedigree", "Farmina", "Brit", "Eukanuba"
+    ) }
     val animals = db.animalDao().getAllAnimals()
 
     repeat(12) {
@@ -93,7 +95,7 @@ private suspend fun createFoodProducts(db: AppDatabase, categoryId: Int, flavour
         val formattedAnimal = formatAnimal(animal.name)
         val flavour = flavours.random()
 
-        val productName = "Корм ${manufacturer.name} для $formattedAnimal $flavour"
+        val productName = "$type ${manufacturer.name} для $formattedAnimal $flavour"
         db.productDao().insertProduct(
             Product(
                 name = productName,
