@@ -9,11 +9,13 @@ import kotlin.random.Random
 
 fun seedDatabase(db: AppDatabase) {
     CoroutineScope(Dispatchers.IO).launch {
-        insertManufacturers(db)
-        insertAnimals(db)
-        insertBreeds(db)
-        insertCategories(db)
-        insertProducts(db)
+        if (db.productDao().getProductsCount() == 0) {
+            insertManufacturers(db)
+            insertAnimals(db)
+            insertBreeds(db)
+            insertCategories(db)
+            insertProducts(db)
+        }
     }
 }
 

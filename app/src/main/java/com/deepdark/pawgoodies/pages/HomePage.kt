@@ -35,7 +35,7 @@ fun HomePage(
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
-        if (categories.isEmpty()) {
+        if (categories.isEmpty() || products.isEmpty()) {
             LoadingPlaceholder()
 
             return

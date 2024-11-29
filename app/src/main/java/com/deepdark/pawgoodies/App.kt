@@ -112,7 +112,7 @@ fun App() {
                 }
 
                 composable(
-                    route = "productDetail/{productId}",
+                    route = "${NavigationPage.ProductDetail.route}/{productId}",
                     arguments = listOf(navArgument("productId") { type = NavType.IntType })
                 ) { backStackEntry ->
                     val productId = backStackEntry.arguments?.getInt("productId")

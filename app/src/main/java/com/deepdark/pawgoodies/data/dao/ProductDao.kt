@@ -31,4 +31,7 @@ interface ProductDao {
 
     @Query("SELECT * FROM products WHERE manufacturerId = :manufacturerId")
     suspend fun getProductsByManufacturer(manufacturerId: Int): List<Product>
+
+    @Query("SELECT COUNT(*) FROM products")
+    suspend fun getProductsCount(): Int
 }
