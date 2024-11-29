@@ -1,52 +1,73 @@
 package com.deepdark.pawgoodies.data.viewmodels
 
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.deepdark.pawgoodies.data.SessionManager
-import com.deepdark.pawgoodies.data.entities.CartItem
+import com.deepdark.pawgoodies.data.entities.complex.CartItemWithProduct
 import com.deepdark.pawgoodies.data.repositories.CartItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
     private val cartItemRepository: CartItemRepository,
-    sessionManager: SessionManager
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val userIdLiveData = sessionManager.userIdLiveData
+    private val _cartItems = MutableStateFlow<List<CartItemWithProduct>>(emptyList())
+    val cartItems: StateFlow<List<CartItemWithProduct>> = _cartItems
 
-    val cartItems: MediatorLiveData<List<CartItem>> = MediatorLiveData<List<CartItem>>().apply {
-        addSource(userIdLiveData) { userId ->
-            if (userId != null) {
-                addSource(cartItemRepository.getCartItemsLive(userId)) { cartList ->
-                    value = cartList
-                }
-            } else {
-                value = emptyList()
-            }
-        }
-    }
+    private val _totalPrice = MutableStateFlow(0.0)
+    val totalPrice: StateFlow<Double> = _totalPrice
 
-    fun addToCart(productId: Int, quantity: Int) {
-        userIdLiveData.value?.let { userId ->
-            viewModelScope.launch {
-                cartItemRepository.addToCart(
-                    CartItem(
-                        userId = userId,
-                        productId = productId,
-                        quantity = quantity
-                    )
-                )
-            }
-        }
-    }
-
-    fun removeFromCart(cartItem: CartItem) {
+    init {
         viewModelScope.launch {
-            cartItemRepository.removeFromCart(cartItem)
+            sessionManager.userId.collectLatest { userId ->
+                if (userId != null) {
+                    cartItemRepository.getCartItemsWithProducts(userId).collect { items ->
+                        _cartItems.value = items
+                        calculateTotal(items)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun calculateTotal(items: List<CartItemWithProduct>) {
+        _totalPrice.value = items.sumOf { it.cartItem.quantity * it.product.price }
+    }
+
+    fun addToCart(productId: Int, quantity: Int = 1) {
+        viewModelScope.launch {
+            sessionManager.userId.collectLatest { userId ->
+                if (userId != null) {
+                    cartItemRepository.addToCart(userId, productId, quantity)
+                }
+            }
+        }
+    }
+
+    fun removeItem(productId: Int) {
+        viewModelScope.launch {
+            sessionManager.userId.collectLatest { userId ->
+                if (userId != null) {
+                    cartItemRepository.removeFromCart(userId, productId)
+                }
+            }
+        }
+    }
+
+    fun clearCart() {
+        viewModelScope.launch {
+            sessionManager.userId.collectLatest { userId ->
+                if (userId != null) {
+                    cartItemRepository.clearCart(userId)
+                }
+            }
         }
     }
 }

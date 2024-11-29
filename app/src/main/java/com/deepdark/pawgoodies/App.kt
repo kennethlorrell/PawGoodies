@@ -30,12 +30,14 @@ import com.deepdark.pawgoodies.components.BottomNavBar
 import com.deepdark.pawgoodies.components.TopBar
 import com.deepdark.pawgoodies.data.viewmodels.AuthState
 import com.deepdark.pawgoodies.data.viewmodels.AuthViewModel
+import com.deepdark.pawgoodies.data.viewmodels.CartViewModel
 import com.deepdark.pawgoodies.data.viewmodels.SharedViewModel
 import com.deepdark.pawgoodies.pages.SplashPage
 
 @Composable
 fun App() {
     val sharedViewModel: SharedViewModel = hiltViewModel()
+    val cartViewModel: CartViewModel = hiltViewModel()
     val authViewModel: AuthViewModel = hiltViewModel()
 
     val categories by sharedViewModel.categories.observeAsState(emptyList())
@@ -100,7 +102,16 @@ fun App() {
                     )
                 }
 
-                composable(NavigationPage.Cart.route) { CartPage() }
+                composable(NavigationPage.Cart.route) {
+                    CartPage(
+                        cartItems = cartViewModel.cartItems.collectAsState().value,
+                        totalPrice = cartViewModel.totalPrice.collectAsState().value,
+                        onAddToCart = { cartViewModel.addToCart(it) },
+                        onRemoveFromCart = { cartViewModel.removeItem(it) },
+                        onCheckout = { cartViewModel.clearCart() }
+                    )
+                }
+
                 composable(NavigationPage.Wishlist.route) { WishlistPage() }
                 composable(NavigationPage.PetProfile.route) { PetProfilePage() }
 
@@ -138,7 +149,7 @@ fun App() {
                                 ProductDetailsPage(
                                     product = product!!,
                                     onBack = { navController.popBackStack() },
-                                    onAddToCart = { /* TODO: Implement cart */ },
+                                    onAddToCart = { cartViewModel.addToCart(productId) },
                                     onAddToWishlist = { /* TODO: Implement wishlist */ }
                                 )
                             }
