@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,19 +31,18 @@ import com.deepdark.pawgoodies.components.TopBar
 import com.deepdark.pawgoodies.data.viewmodels.AuthState
 import com.deepdark.pawgoodies.data.viewmodels.AuthViewModel
 import com.deepdark.pawgoodies.data.viewmodels.SharedViewModel
+import com.deepdark.pawgoodies.pages.SplashPage
 
 @Composable
 fun App() {
     val sharedViewModel: SharedViewModel = hiltViewModel()
     val authViewModel: AuthViewModel = hiltViewModel()
-    val authState by authViewModel.authState.collectAsState()
-
-    LaunchedEffect(Unit) {
-        authViewModel.restoreSession()
-    }
 
     val categories by sharedViewModel.categories.observeAsState(emptyList())
     val products by sharedViewModel.products.observeAsState(emptyList())
+
+    val authState by authViewModel.authState.collectAsState()
+    val isAuthenticated = authState is AuthState.Authenticated
 
     val navController = rememberNavController()
 
@@ -53,7 +51,7 @@ fun App() {
             TopBar()
         },
         bottomBar = {
-            if (authState is AuthState.Authenticated) {
+            if (isAuthenticated) {
                 BottomNavBar(navController)
             }
         }
@@ -65,11 +63,18 @@ fun App() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = when (authState) {
-                    is AuthState.Authenticated -> NavigationPage.Home.route
-                    else -> NavigationPage.Login.route
-                }
+                startDestination = NavigationPage.Splash.route
             ) {
+                composable(NavigationPage.Splash.route) {
+                    SplashPage(
+                        onNavigate = { destination ->
+                            navController.navigate(destination) {
+                                popUpTo(NavigationPage.Splash.route) { inclusive = true }
+                            }
+                        }
+                    )
+                }
+
                 composable(NavigationPage.Login.route) {
                     LoginPage(
                         authViewModel = authViewModel,

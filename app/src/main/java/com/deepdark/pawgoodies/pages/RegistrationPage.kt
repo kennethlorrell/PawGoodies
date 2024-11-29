@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.deepdark.pawgoodies.components.ErrorMessage
 import com.deepdark.pawgoodies.components.StyledTextField
 import com.deepdark.pawgoodies.data.viewmodels.AuthState
 import com.deepdark.pawgoodies.data.viewmodels.AuthViewModel
@@ -35,6 +37,12 @@ fun RegistrationPage(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Registered) {
+            onRegisterSuccess()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -59,22 +67,14 @@ fun RegistrationPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        ErrorMessage(
+            message = if (authState is AuthState.Error) (authState as AuthState.Error).message else null
+        )
+
         Button(onClick = {
             authViewModel.register(email, password)
         }) {
             Text("Зареєструватися")
-        }
-
-        when (authState) {
-            is AuthState.Registered -> onRegisterSuccess()
-            is AuthState.Error -> {
-                Text(
-                    text = (authState as AuthState.Error).message,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-            }
-            else -> Unit
         }
 
         Spacer(modifier = Modifier.height(8.dp))

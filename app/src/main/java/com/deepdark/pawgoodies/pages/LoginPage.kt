@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.deepdark.pawgoodies.components.ErrorMessage
 import com.deepdark.pawgoodies.components.StyledTextField
 import com.deepdark.pawgoodies.data.viewmodels.AuthState
 import com.deepdark.pawgoodies.data.viewmodels.AuthViewModel
@@ -34,6 +36,12 @@ fun LoginPage(
     var password by remember { mutableStateOf("") }
 
     val authState by authViewModel.authState.collectAsState()
+
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Authenticated) {
+            onLoginSuccess()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -58,17 +66,9 @@ fun LoginPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (authState) {
-            is AuthState.Authenticated -> onLoginSuccess()
-            is AuthState.Error -> {
-                Text(
-                    (authState as AuthState.Error).message,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-            }
-            else -> Unit
-        }
+        ErrorMessage(
+            message = if (authState is AuthState.Error) (authState as AuthState.Error).message else null
+        )
 
         Button(onClick = {
             authViewModel.login(email, password)

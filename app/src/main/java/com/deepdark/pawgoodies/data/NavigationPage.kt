@@ -9,9 +9,12 @@ import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.Pets
 import androidx.compose.material.icons.outlined.Satellite
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.SmartDisplay
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class NavigationPage(val route: String, val title: String, val icon: ImageVector) {
+    object Splash : NavigationPage("splash", "Заставка", Icons.Outlined.SmartDisplay)
+
     object Login : NavigationPage("login", "Вхід", Icons.Outlined.Lock)
     object Registration : NavigationPage("register", "Реєстрація", Icons.Outlined.PersonAdd)
 
