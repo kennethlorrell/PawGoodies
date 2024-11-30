@@ -13,7 +13,9 @@ import com.deepdark.pawgoodies.data.entities.Product
 @Composable
 fun Products(
     products: List<Product>,
-    onProductClick: (Product) -> Unit
+    onProductClick: (Product) -> Unit,
+    onAddToCart: (Int) -> Unit,
+    onToggleWishlist: (Int) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
@@ -24,7 +26,9 @@ fun Products(
         items(products) { product ->
             ProductCard(
                 product = product,
-                onProductClick = { onProductClick(product) }
+                onProductClick = { onProductClick(product) },
+                onAddToCart = { onAddToCart(product.id) },
+                onToggleWishlist = { onToggleWishlist(product.id) }
             )
         }
     }

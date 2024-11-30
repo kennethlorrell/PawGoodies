@@ -28,7 +28,6 @@ fun BottomNavBar(navController: NavController) {
         NavigationPage.Home,
         NavigationPage.Cart,
         NavigationPage.Wishlist,
-        NavigationPage.PetProfile,
         NavigationPage.UserProfile
     )
 

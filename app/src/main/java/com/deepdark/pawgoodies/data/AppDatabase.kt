@@ -52,8 +52,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun petDao(): PetDao
     abstract fun productDao(): ProductDao
     abstract fun animalDao(): AnimalDao
-    abstract fun cartDao(): CartItemDao
-    abstract fun wishlistDao(): WishlistItemDao
+    abstract fun cartItemDao(): CartItemDao
+    abstract fun wishlistItemDao(): WishlistItemDao
 }
 
 @Module

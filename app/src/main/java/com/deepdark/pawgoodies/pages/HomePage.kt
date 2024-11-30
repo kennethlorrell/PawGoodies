@@ -30,7 +30,10 @@ import com.deepdark.pawgoodies.data.entities.Product
 fun HomePage(
     categories: List<Category>,
     products: List<Product>,
-    onProductClick: (Product) -> Unit
+    onProductClick: (Product) -> Unit,
+    onAddToCart: (Int) -> Unit,
+//    onNavigateToCart: () -> Unit,
+    onToggleWishlist: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -79,7 +82,9 @@ fun HomePage(
             } else {
                 Products(
                     products = filteredProducts,
-                    onProductClick = onProductClick
+                    onProductClick = onProductClick,
+                    onAddToCart = { productId -> onAddToCart(productId) },
+                    onToggleWishlist = { productId -> onToggleWishlist(productId) }
                 )
             }
         }

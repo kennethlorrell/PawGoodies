@@ -98,7 +98,9 @@ fun App() {
                         products = products,
                         onProductClick = { product ->
                             navController.navigate("${NavigationPage.ProductDetail.route}/${product.id}")
-                        }
+                        },
+                        onAddToCart = { productId -> cartViewModel.addToCart(productId) },
+                        onToggleWishlist = { /* TODO: Implement wishlist */ }
                     )
                 }
 
@@ -106,9 +108,9 @@ fun App() {
                     CartPage(
                         cartItems = cartViewModel.cartItems.collectAsState().value,
                         totalPrice = cartViewModel.totalPrice.collectAsState().value,
-                        onAddToCart = { cartViewModel.addToCart(it) },
-                        onRemoveFromCart = { cartViewModel.removeItem(it) },
-                        onCheckout = { cartViewModel.clearCart() }
+                        onChangeQuantity = { productId, quantity -> cartViewModel.changeQuantity(productId, quantity) },
+                        onRemoveFromCart = { productId -> cartViewModel.removeItem(productId) },
+                        onCleanCart = { cartViewModel.clearCart() }
                     )
                 }
 

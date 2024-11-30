@@ -10,18 +10,18 @@ class CartItemRepository @Inject constructor(
     private val db: AppDatabase
 ) {
     fun getCartItemsWithProducts(userId: Int): Flow<List<CartItemWithProduct>> {
-        return db.cartDao().getCartItems(userId)
+        return db.cartItemDao().getCartItems(userId)
     }
 
     suspend fun addToCart(userId: Int, productId: Int, quantity: Int = 1) {
-        val existingItem = db.cartDao().getCartItem(userId, productId)
+        val existingItem = db.cartItemDao().getCartItem(userId, productId)
 
         if (existingItem != null) {
-            db.cartDao().updateCartItem(
+            db.cartItemDao().updateCartItem(
                 existingItem.copy(quantity = existingItem.quantity + quantity)
             )
         } else {
-            db.cartDao().addToCart(
+            db.cartItemDao().addToCart(
                 CartItem(
                     userId = userId,
                     productId = productId,
@@ -31,15 +31,19 @@ class CartItemRepository @Inject constructor(
         }
     }
 
-    suspend fun updateCartItem(cartItem: CartItem) {
-        db.cartDao().updateCartItem(cartItem)
+    suspend fun changeQuantity(userId: Int, productId: Int, quantity: Int) {
+        if (quantity > 0) {
+            db.cartItemDao().changeQuantity(userId, productId, quantity)
+        } else {
+            db.cartItemDao().removeFromCart(userId, productId)
+        }
     }
 
     suspend fun removeFromCart(userId: Int, productId: Int) {
-        db.cartDao().removeFromCart(userId, productId)
+        db.cartItemDao().removeFromCart(userId, productId)
     }
 
     suspend fun clearCart(userId: Int) {
-        db.cartDao().clearCart(userId)
+        db.cartItemDao().clearCart(userId)
     }
 }

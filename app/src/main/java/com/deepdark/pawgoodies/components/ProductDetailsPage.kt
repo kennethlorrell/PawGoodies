@@ -1,5 +1,6 @@
 package com.deepdark.pawgoodies.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,7 +49,7 @@ fun ProductDetailsPage(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = "Назад"
                         )
                     }
@@ -84,7 +85,7 @@ fun ProductDetailsPage(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "${product.price} грн",
+                text = "${product.price} ₴",
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -116,7 +117,8 @@ fun ProductDetailsPage(
 
                 OutlinedButton(
                     onClick = onAddToWishlist,
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                    border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
                 ) {
                     Text(text = "До списку бажань")
                 }

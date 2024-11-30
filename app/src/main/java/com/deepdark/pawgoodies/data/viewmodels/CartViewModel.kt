@@ -51,6 +51,16 @@ class CartViewModel @Inject constructor(
         }
     }
 
+    fun changeQuantity(productId: Int, quantity: Int) {
+        viewModelScope.launch {
+            sessionManager.userId.collectLatest { userId ->
+                if (userId != null) {
+                    cartItemRepository.changeQuantity(userId, productId, quantity)
+                }
+            }
+        }
+    }
+
     fun removeItem(productId: Int) {
         viewModelScope.launch {
             sessionManager.userId.collectLatest { userId ->
