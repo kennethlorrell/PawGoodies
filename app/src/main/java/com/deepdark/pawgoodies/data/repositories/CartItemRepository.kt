@@ -2,14 +2,14 @@ package com.deepdark.pawgoodies.data.repositories
 
 import com.deepdark.pawgoodies.data.AppDatabase
 import com.deepdark.pawgoodies.data.entities.CartItem
-import com.deepdark.pawgoodies.data.entities.complex.CartItemWithProduct
+import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class CartItemRepository @Inject constructor(
     private val db: AppDatabase
 ) {
-    fun getCartItemsWithProducts(userId: Int): Flow<List<CartItemWithProduct>> {
+    fun getCartItems(userId: Int): Flow<List<ProductWithState>> {
         return db.cartItemDao().getCartItems(userId)
     }
 

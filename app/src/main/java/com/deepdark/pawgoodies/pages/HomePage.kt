@@ -24,13 +24,13 @@ import com.deepdark.pawgoodies.components.CategoryTabs
 import com.deepdark.pawgoodies.components.LoadingPlaceholder
 import com.deepdark.pawgoodies.components.Products
 import com.deepdark.pawgoodies.data.entities.Category
-import com.deepdark.pawgoodies.data.entities.Product
+import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 
 @Composable
 fun HomePage(
     categories: List<Category>,
-    products: List<Product>,
-    onProductClick: (Product) -> Unit,
+    products: List<ProductWithState>,
+    onProductClick: (Int) -> Unit,
     onAddToCart: (Int) -> Unit,
 //    onNavigateToCart: () -> Unit,
     onToggleWishlist: (Int) -> Unit
@@ -82,7 +82,7 @@ fun HomePage(
             } else {
                 Products(
                     products = filteredProducts,
-                    onProductClick = onProductClick,
+                    onProductClick = { productId -> onProductClick(productId) },
                     onAddToCart = { productId -> onAddToCart(productId) },
                     onToggleWishlist = { productId -> onToggleWishlist(productId) }
                 )

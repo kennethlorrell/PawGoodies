@@ -32,19 +32,20 @@ import com.deepdark.pawgoodies.data.viewmodels.AuthState
 import com.deepdark.pawgoodies.data.viewmodels.AuthViewModel
 import com.deepdark.pawgoodies.data.viewmodels.CartViewModel
 import com.deepdark.pawgoodies.data.viewmodels.SharedViewModel
+import com.deepdark.pawgoodies.data.viewmodels.WishlistViewModel
 import com.deepdark.pawgoodies.pages.SplashPage
 
 @Composable
 fun App() {
     val sharedViewModel: SharedViewModel = hiltViewModel()
     val cartViewModel: CartViewModel = hiltViewModel()
+    val wishlistViewModel: WishlistViewModel = hiltViewModel()
     val authViewModel: AuthViewModel = hiltViewModel()
 
     val categories by sharedViewModel.categories.observeAsState(emptyList())
     val products by sharedViewModel.products.observeAsState(emptyList())
 
     val authState by authViewModel.authState.collectAsState()
-    val isAuthenticated = authState is AuthState.Authenticated
 
     val navController = rememberNavController()
 
@@ -53,7 +54,7 @@ fun App() {
             TopBar()
         },
         bottomBar = {
-            if (isAuthenticated) {
+            if (authState is AuthState.Authenticated) {
                 BottomNavBar(navController)
             }
         }
@@ -96,11 +97,11 @@ fun App() {
                     HomePage(
                         categories = categories,
                         products = products,
-                        onProductClick = { product ->
-                            navController.navigate("${NavigationPage.ProductDetail.route}/${product.id}")
+                        onProductClick = { productId ->
+                            navController.navigate("${NavigationPage.ProductDetail.route}/${productId}")
                         },
                         onAddToCart = { productId -> cartViewModel.addToCart(productId) },
-                        onToggleWishlist = { /* TODO: Implement wishlist */ }
+                        onToggleWishlist = { productId -> wishlistViewModel.toggleWishlistItem(productId) }
                     )
                 }
 
@@ -114,7 +115,14 @@ fun App() {
                     )
                 }
 
-                composable(NavigationPage.Wishlist.route) { WishlistPage() }
+                composable(NavigationPage.Wishlist.route) {
+                    WishlistPage(
+                        wishlistItems = wishlistViewModel.wishlistItems.collectAsState().value,
+                        onMoveToCart = { productId -> cartViewModel.addToCart(productId) },
+                        onToggleWishlist = { productId -> wishlistViewModel.toggleWishlistItem(productId) }
+                    )
+                }
+
                 composable(NavigationPage.PetProfile.route) { PetProfilePage() }
 
                 composable(NavigationPage.UserProfile.route) {
@@ -152,7 +160,7 @@ fun App() {
                                     product = product!!,
                                     onBack = { navController.popBackStack() },
                                     onAddToCart = { cartViewModel.addToCart(productId) },
-                                    onAddToWishlist = { /* TODO: Implement wishlist */ }
+                                    onAddToWishlist = { wishlistViewModel.toggleWishlistItem(productId) }
                                 )
                             }
                         }

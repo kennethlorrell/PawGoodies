@@ -32,15 +32,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.deepdark.pawgoodies.R
-import com.deepdark.pawgoodies.data.entities.Product
+import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailsPage(
-    product: Product,
+    product: ProductWithState,
     onBack: () -> Unit,
-    onAddToCart: () -> Unit,
-    onAddToWishlist: () -> Unit
+    onAddToCart: (Int) -> Unit,
+    onAddToWishlist: (Int) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -100,6 +100,15 @@ fun ProductDetailsPage(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "Виробник: ${product.manufacturerName}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
@@ -109,14 +118,14 @@ fun ProductDetailsPage(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = onAddToCart,
+                    onClick = { onAddToCart(product.id) },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Text(text = "До кошика")
                 }
 
                 OutlinedButton(
-                    onClick = onAddToWishlist,
+                    onClick = { onAddToWishlist(product.id) },
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                     border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
                 ) {

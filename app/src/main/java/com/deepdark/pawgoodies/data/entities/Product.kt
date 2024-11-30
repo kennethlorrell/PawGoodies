@@ -21,6 +21,7 @@ import androidx.room.PrimaryKey
         )
     ]
 )
+
 data class Product(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val categoryId: Int,

@@ -3,7 +3,7 @@ package com.deepdark.pawgoodies.data.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.deepdark.pawgoodies.data.SessionManager
-import com.deepdark.pawgoodies.data.entities.complex.CartItemWithProduct
+import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 import com.deepdark.pawgoodies.data.repositories.CartItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,8 +18,8 @@ class CartViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val _cartItems = MutableStateFlow<List<CartItemWithProduct>>(emptyList())
-    val cartItems: StateFlow<List<CartItemWithProduct>> = _cartItems
+    private val _cartItems = MutableStateFlow<List<ProductWithState>>(emptyList())
+    val cartItems: StateFlow<List<ProductWithState>> = _cartItems
 
     private val _totalPrice = MutableStateFlow(0.0)
     val totalPrice: StateFlow<Double> = _totalPrice
@@ -28,7 +28,7 @@ class CartViewModel @Inject constructor(
         viewModelScope.launch {
             sessionManager.userId.collectLatest { userId ->
                 if (userId != null) {
-                    cartItemRepository.getCartItemsWithProducts(userId).collect { items ->
+                    cartItemRepository.getCartItems(userId).collect { items ->
                         _cartItems.value = items
                         calculateTotal(items)
                     }
@@ -37,8 +37,8 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    private fun calculateTotal(items: List<CartItemWithProduct>) {
-        _totalPrice.value = items.sumOf { it.cartItem.quantity * it.product.price }
+    private fun calculateTotal(items: List<ProductWithState>) {
+        _totalPrice.value = items.sumOf { it.cartQuantity * it.price }
     }
 
     fun addToCart(productId: Int, quantity: Int = 1) {

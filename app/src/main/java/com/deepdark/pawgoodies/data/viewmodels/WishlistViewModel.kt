@@ -1,55 +1,45 @@
 package com.deepdark.pawgoodies.data.viewmodels
 
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.deepdark.pawgoodies.data.SessionManager
-import com.deepdark.pawgoodies.data.entities.WishlistItem
+import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 import com.deepdark.pawgoodies.data.repositories.WishlistItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class WishlistViewModel @Inject constructor(
     private val wishlistItemRepository: WishlistItemRepository,
-    sessionManager: SessionManager
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val userIdLiveData = sessionManager.userIdLiveData
+    private val _wishlistItems = MutableStateFlow<List<ProductWithState>>(emptyList())
+    val wishlistItems: StateFlow<List<ProductWithState>> = _wishlistItems
 
-    val wishlistItems: MediatorLiveData<List<WishlistItem>> = MediatorLiveData<List<WishlistItem>>().apply {
-        addSource(userIdLiveData) { userId ->
-            if (userId != null) {
-                addSource(wishlistItemRepository.getWishlistItemsLive(userId)) { wishlist ->
-                    value = wishlist
-                }
-            } else {
-                value = emptyList()
-            }
-        }
-    }
-
-    fun addToWishlist(
-        productId: Int
-    ) {
-        userIdLiveData.value?.let { userId ->
-            viewModelScope.launch {
-                wishlistItemRepository.addToWishlist(
-                    WishlistItem(
-                        userId = userId,
-                        productId = productId
-                    )
-                )
-            }
-        }
-    }
-
-    fun removeFromWishlist(
-        wishlistItem: WishlistItem
-    ) {
+    init {
         viewModelScope.launch {
-            wishlistItemRepository.removeFromWishlist(wishlistItem)
+            sessionManager.userId.collectLatest { userId ->
+                if (userId != null) {
+                    wishlistItemRepository.getWishlistItems(userId).collect { items ->
+                        _wishlistItems.value = items
+                    }
+                }
+            }
+        }
+    }
+
+    fun toggleWishlistItem(productId: Int) {
+        viewModelScope.launch {
+            sessionManager.userId.collectLatest { userId ->
+                if (userId != null) {
+                    wishlistItemRepository.toggleWishlistItem(userId, productId)
+                }
+            }
         }
     }
 }

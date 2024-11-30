@@ -24,24 +24,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.deepdark.pawgoodies.data.entities.Product
+import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 
 @Composable
 fun ProductCard(
-    product: Product,
-    onProductClick: () -> Unit,
-    onAddToCart: () -> Unit,
-    onToggleWishlist: () -> Unit
+    product: ProductWithState,
+    onProductClick: (Int) -> Unit,
+    onAddToCart: (Int) -> Unit,
+    onToggleWishlist: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
-            .clickable { onProductClick() },
+            .clickable { onProductClick(product.id) },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(4.dp)
@@ -88,14 +86,14 @@ fun ProductCard(
                     .padding(top = 28.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                IconButton(onClick = onAddToCart) {
+                IconButton(onClick = { onAddToCart(product.id) } ) {
                     Icon(
                         imageVector = Icons.Outlined.ShoppingCart,
                         contentDescription = "Додати до кошика",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                IconButton(onClick = onToggleWishlist) {
+                IconButton(onClick = { onToggleWishlist(product.id) } ) {
                     Icon(
                         imageVector = Icons.Outlined.FavoriteBorder,
                         contentDescription = "Додати до списку бажань",

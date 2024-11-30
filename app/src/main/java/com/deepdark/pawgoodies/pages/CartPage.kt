@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -18,11 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.deepdark.pawgoodies.components.CartItemCard
 import com.deepdark.pawgoodies.components.CartTotals
-import com.deepdark.pawgoodies.data.entities.complex.CartItemWithProduct
+import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 
 @Composable
 fun CartPage(
-    cartItems: List<CartItemWithProduct>,
+    cartItems: List<ProductWithState>,
     totalPrice: Double,
     onChangeQuantity: (Int, Int) -> Unit,
     onRemoveFromCart: (Int) -> Unit,
@@ -60,6 +61,7 @@ fun CartPage(
                         onChangeQuantity = { item, quantity -> onChangeQuantity(item, quantity) },
                         onRemove = { productId -> onRemoveFromCart(productId) }
                     )
+                    HorizontalDivider()
                 }
             }
 

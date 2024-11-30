@@ -1,4 +1,4 @@
-package com.deepdark.pawgoodies.data.entities.complex
+package com.deepdark.pawgoodies.data.entities.stateful
 
 import androidx.room.Embedded
 import androidx.room.Relation

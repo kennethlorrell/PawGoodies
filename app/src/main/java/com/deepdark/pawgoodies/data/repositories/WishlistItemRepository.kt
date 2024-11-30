@@ -1,22 +1,27 @@
 package com.deepdark.pawgoodies.data.repositories
 
-import androidx.lifecycle.LiveData
 import com.deepdark.pawgoodies.data.AppDatabase
 import com.deepdark.pawgoodies.data.entities.WishlistItem
+import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class WishlistItemRepository @Inject constructor(
     private val db: AppDatabase
 ) {
-    fun getWishlistItemsLive(
+    fun getWishlistItems(
         userId: Int
-    ): LiveData<List<WishlistItem>> = db.wishlistDao().getWishlistItems(userId)
+    ): Flow<List<ProductWithState>> = db.wishlistItemDao().getWishlistItems(userId)
 
-    suspend fun addToWishlist(
-        wishlistItem: WishlistItem
-    ) = db.wishlistDao().addToWishlist(wishlistItem)
+    suspend fun toggleWishlistItem(userId: Int, productId: Int) {
+        val exists = db.wishlistItemDao().isInWishlist(userId, productId)
 
-    suspend fun removeFromWishlist(
-        wishlistItem: WishlistItem
-    ) = db.wishlistDao().removeFromWishlist(wishlistItem)
+        if (exists) {
+            db.wishlistItemDao().removeFromWishlist(userId = userId, productId = productId)
+        } else {
+            db.wishlistItemDao().addToWishlist(
+                WishlistItem(userId = userId, productId = productId)
+            )
+        }
+    }
 }

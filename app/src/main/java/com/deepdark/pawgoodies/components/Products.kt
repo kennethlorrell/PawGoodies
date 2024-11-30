@@ -8,12 +8,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.deepdark.pawgoodies.data.entities.Product
+import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 
 @Composable
 fun Products(
-    products: List<Product>,
-    onProductClick: (Product) -> Unit,
+    products: List<ProductWithState>,
+    onProductClick: (Int) -> Unit,
     onAddToCart: (Int) -> Unit,
     onToggleWishlist: (Int) -> Unit
 ) {
@@ -26,7 +26,7 @@ fun Products(
         items(products) { product ->
             ProductCard(
                 product = product,
-                onProductClick = { onProductClick(product) },
+                onProductClick = { onProductClick(product.id) },
                 onAddToCart = { onAddToCart(product.id) },
                 onToggleWishlist = { onToggleWishlist(product.id) }
             )
