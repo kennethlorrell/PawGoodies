@@ -44,7 +44,6 @@ fun App() {
 
     val categories by sharedViewModel.categories.observeAsState(emptyList())
     val products by sharedViewModel.products.observeAsState(emptyList())
-
     val authState by authViewModel.authState.collectAsState()
 
     val navController = rememberNavController()
@@ -70,6 +69,7 @@ fun App() {
             ) {
                 composable(NavigationPage.Splash.route) {
                     SplashPage(
+                        authState = authState,
                         onNavigate = { destination ->
                             navController.navigate(destination) {
                                 popUpTo(NavigationPage.Splash.route) { inclusive = true }
@@ -80,7 +80,9 @@ fun App() {
 
                 composable(NavigationPage.Login.route) {
                     LoginPage(
-                        authViewModel = authViewModel,
+                        authState = authState,
+                        errorState = authViewModel.errorState.collectAsState().value,
+                        onLoginClick = { email, password -> authViewModel.login(email, password) },
                         onLoginSuccess = { navController.navigate(NavigationPage.Home.route) },
                         onRegisterClick = { navController.navigate(NavigationPage.Registration.route) }
                     )
@@ -88,6 +90,9 @@ fun App() {
 
                 composable(NavigationPage.Registration.route) {
                     RegistrationPage(
+                        authState = authState,
+                        errorState = authViewModel.errorState.collectAsState().value,
+                        onRegisterClick = { name, email, password -> authViewModel.register(name, email, password) },
                         onRegisterSuccess = { navController.navigate(NavigationPage.Home.route) },
                         onLoginClick = { navController.navigate(NavigationPage.Login.route) }
                     )
@@ -130,6 +135,10 @@ fun App() {
 
                 composable(NavigationPage.UserProfile.route) {
                     UserProfilePage(
+                        user = authViewModel.user.collectAsState().value,
+                        errorState = authViewModel.errorState.collectAsState().value,
+                        onUpdateUserDetails = { name, email -> authViewModel.updateUserDetails(name, email) },
+                        onUpdatePassword = { oldPassword, newPassword -> authViewModel.updatePassword(oldPassword, newPassword) },
                         onLogout = {
                             authViewModel.logout()
 

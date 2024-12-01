@@ -35,4 +35,26 @@ class UserRepository @Inject constructor(
     suspend fun insertUser(
         user: User
     ): Long = db.userDao().insertUser(user)
+
+    suspend fun updateUserDetails(
+        userId: Int,
+        name: String,
+        email: String
+    ) {
+        db.userDao().updateUserDetails(
+            userId = userId,
+            name = name,
+            email = email
+        )
+    }
+
+    suspend fun updateUserPassword(
+        userId: Int,
+        password: String
+    ) {
+        db.userDao().updateUserPassword(
+            userId = userId,
+            password = password
+        )
+    }
 }
