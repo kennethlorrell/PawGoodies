@@ -15,6 +15,7 @@ fun Products(
     products: List<ProductWithState>,
     onProductClick: (Int) -> Unit,
     onAddToCart: (Int) -> Unit,
+    onNavigateToCart: () -> Unit,
     onToggleWishlist: (Int) -> Unit
 ) {
     LazyVerticalGrid(
@@ -28,6 +29,7 @@ fun Products(
                 product = product,
                 onProductClick = { onProductClick(product.id) },
                 onAddToCart = { onAddToCart(product.id) },
+                onNavigateToCart = { onNavigateToCart() },
                 onToggleWishlist = { onToggleWishlist(product.id) }
             )
         }

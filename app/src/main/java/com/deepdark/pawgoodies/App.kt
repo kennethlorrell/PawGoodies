@@ -101,6 +101,7 @@ fun App() {
                             navController.navigate("${NavigationPage.ProductDetail.route}/${productId}")
                         },
                         onAddToCart = { productId -> cartViewModel.addToCart(productId) },
+                        onNavigateToCart = { navController.navigate(NavigationPage.Cart.route) },
                         onToggleWishlist = { productId -> wishlistViewModel.toggleWishlistItem(productId) }
                     )
                 }
@@ -111,14 +112,16 @@ fun App() {
                         totalPrice = cartViewModel.totalPrice.collectAsState().value,
                         onChangeQuantity = { productId, quantity -> cartViewModel.changeQuantity(productId, quantity) },
                         onRemoveFromCart = { productId -> cartViewModel.removeItem(productId) },
-                        onCleanCart = { cartViewModel.clearCart() }
+                        onCleanCart = { cartViewModel.clearCart() },
+                        onNavigateToHome = { navController.navigate(NavigationPage.Home.route) }
                     )
                 }
 
                 composable(NavigationPage.Wishlist.route) {
                     WishlistPage(
                         wishlistItems = wishlistViewModel.wishlistItems.collectAsState().value,
-                        onMoveToCart = { productId -> cartViewModel.addToCart(productId) },
+                        onAddToCart = { productId -> cartViewModel.addToCart(productId) },
+                        onNavigateToCart = { navController.navigate(NavigationPage.Cart.route) },
                         onToggleWishlist = { productId -> wishlistViewModel.toggleWishlistItem(productId) }
                     )
                 }
@@ -160,7 +163,8 @@ fun App() {
                                     product = product!!,
                                     onBack = { navController.popBackStack() },
                                     onAddToCart = { cartViewModel.addToCart(productId) },
-                                    onAddToWishlist = { wishlistViewModel.toggleWishlistItem(productId) }
+                                    onNavigateToCart = { navController.navigate(NavigationPage.Cart.route) },
+                                    onToggleWishlist = { wishlistViewModel.toggleWishlistItem(productId) }
                                 )
                             }
                         }

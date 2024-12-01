@@ -40,7 +40,8 @@ fun ProductDetailsPage(
     product: ProductWithState,
     onBack: () -> Unit,
     onAddToCart: (Int) -> Unit,
-    onAddToWishlist: (Int) -> Unit
+    onNavigateToCart: () -> Unit,
+    onToggleWishlist: (Int) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -118,18 +119,35 @@ fun ProductDetailsPage(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = { onAddToCart(product.id) },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    onClick = { if (product.isInCart) onNavigateToCart() else onAddToCart(product.id) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (product.isInCart) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.surface,
+                        contentColor = if (product.isInCart) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.primary
+                    ),
+                    border = if (!product.isInCart) BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.primary
+                    ) else null
                 ) {
-                    Text(text = "До кошика")
+                    Text(text = if (product.isInCart) "У кошику" else "До кошика")
                 }
 
-                OutlinedButton(
-                    onClick = { onAddToWishlist(product.id) },
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
-                    border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
+                Button(
+                    onClick = { onToggleWishlist(product.id) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (product.isInWishlist) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.surface,
+                        contentColor = if (product.isInWishlist) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.primary
+                    ),
+                    border = if (!product.isInWishlist) BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.primary
+                    ) else null
                 ) {
-                    Text(text = "До списку бажань")
+                    Text(text = if (product.isInWishlist) "У списку бажань" else "До списку бажань")
                 }
             }
         }

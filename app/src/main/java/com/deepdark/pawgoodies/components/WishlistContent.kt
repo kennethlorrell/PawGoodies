@@ -1,5 +1,6 @@
 package com.deepdark.pawgoodies.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +28,8 @@ import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 @Composable
 fun WishlistContent(
     product: ProductWithState,
-    onMoveToCart: () -> Unit,
+    onAddToCart: (Int) -> Unit,
+    onNavigateToCart: () -> Unit,
     onToggleWishlist: () -> Unit
 ) {
     Row(
@@ -54,8 +57,20 @@ fun WishlistContent(
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Button(onClick = onMoveToCart) {
-                Text("До кошика")
+            Button(
+                onClick = { if (product.isInCart) onNavigateToCart() else onAddToCart(product.id) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (product.isInCart) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.surface,
+                    contentColor = if (product.isInCart) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.primary
+                ),
+                border = if (!product.isInCart) BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.primary
+                ) else null
+            ) {
+                Text(text = if (product.isInCart) "У кошику" else "До кошика")
             }
 
             Spacer(modifier = Modifier.width(8.dp))

@@ -18,7 +18,8 @@ import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
 @Composable
 fun WishlistPage(
     wishlistItems: List<ProductWithState>,
-    onMoveToCart: (Int) -> Unit,
+    onAddToCart: (Int) -> Unit,
+    onNavigateToCart: () -> Unit,
     onToggleWishlist: (Int) -> Unit
 ) {
     if (wishlistItems.isEmpty()) {
@@ -36,7 +37,8 @@ fun WishlistPage(
             items(wishlistItems) { product ->
                 WishlistContent(
                     product = product,
-                    onMoveToCart = { onMoveToCart(product.id) },
+                    onAddToCart = { onAddToCart(product.id) },
+                    onNavigateToCart = onNavigateToCart,
                     onToggleWishlist = { onToggleWishlist(product.id) }
                 )
                 HorizontalDivider()

@@ -32,7 +32,7 @@ fun HomePage(
     products: List<ProductWithState>,
     onProductClick: (Int) -> Unit,
     onAddToCart: (Int) -> Unit,
-//    onNavigateToCart: () -> Unit,
+    onNavigateToCart: () -> Unit,
     onToggleWishlist: (Int) -> Unit
 ) {
     Box(
@@ -84,6 +84,7 @@ fun HomePage(
                     products = filteredProducts,
                     onProductClick = { productId -> onProductClick(productId) },
                     onAddToCart = { productId -> onAddToCart(productId) },
+                    onNavigateToCart = onNavigateToCart,
                     onToggleWishlist = { productId -> onToggleWishlist(productId) }
                 )
             }

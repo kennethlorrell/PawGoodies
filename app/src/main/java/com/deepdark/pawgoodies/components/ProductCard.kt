@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Card
@@ -33,6 +35,7 @@ fun ProductCard(
     product: ProductWithState,
     onProductClick: (Int) -> Unit,
     onAddToCart: (Int) -> Unit,
+    onNavigateToCart: () -> Unit,
     onToggleWishlist: (Int) -> Unit
 ) {
     Card(
@@ -86,17 +89,18 @@ fun ProductCard(
                     .padding(top = 28.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                IconButton(onClick = { onAddToCart(product.id) } ) {
+                IconButton(onClick = { if (product.isInCart) onNavigateToCart() else onAddToCart(product.id) }) {
                     Icon(
-                        imageVector = Icons.Outlined.ShoppingCart,
-                        contentDescription = "Додати до кошика",
+                        imageVector = if (product.isInCart) Icons.Filled.ShoppingCart else Icons.Outlined.ShoppingCart,
+                        contentDescription = if (product.isInCart) "Перейти до кошика" else "Додати до кошика",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                IconButton(onClick = { onToggleWishlist(product.id) } ) {
+
+                IconButton(onClick = { onToggleWishlist(product.id) }) {
                     Icon(
-                        imageVector = Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Додати до списку бажань",
+                        imageVector = if (product.isInWishlist) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = if (product.isInWishlist) "Видалити зі списка бажань" else "Додати до списку бажань",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }

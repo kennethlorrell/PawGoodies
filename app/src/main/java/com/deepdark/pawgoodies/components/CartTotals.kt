@@ -21,7 +21,6 @@ fun CartTotals(
     totalPrice: Double,
     onCheckout: () -> Unit
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,7 +38,10 @@ fun CartTotals(
 
         Spacer(modifier = Modifier.padding(4.dp))
 
-        Button(onClick = onCheckout, contentPadding = PaddingValues(12.dp)) {
+        Button(
+            onClick = onCheckout,
+            contentPadding = PaddingValues(12.dp)
+        ) {
             Text("Оформити замовлення")
         }
     }
