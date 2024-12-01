@@ -1,10 +1,10 @@
 package com.deepdark.pawgoodies.data.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.deepdark.pawgoodies.data.entities.Category
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDao {
@@ -15,7 +15,7 @@ interface CategoryDao {
     suspend fun insertCategories(categories: List<Category>)
 
     @Query("SELECT * FROM categories")
-    fun getAllCategoriesLive(): LiveData<List<Category>>
+    fun getAllCategoriesLive(): Flow<List<Category>>
 
     @Query("SELECT * FROM categories")
     suspend fun getAllCategories(): List<Category>

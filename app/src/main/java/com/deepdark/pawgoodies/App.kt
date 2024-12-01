@@ -9,7 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -42,8 +41,8 @@ fun App() {
     val wishlistViewModel: WishlistViewModel = hiltViewModel()
     val authViewModel: AuthViewModel = hiltViewModel()
 
-    val categories by sharedViewModel.categories.observeAsState(emptyList())
-    val products by sharedViewModel.products.observeAsState(emptyList())
+    val categories by sharedViewModel.categories.collectAsState(emptyList())
+    val products by sharedViewModel.products.collectAsState(emptyList())
     val authState by authViewModel.authState.collectAsState()
 
     val navController = rememberNavController()
@@ -81,7 +80,7 @@ fun App() {
                 composable(NavigationPage.Login.route) {
                     LoginPage(
                         authState = authState,
-                        errorState = authViewModel.errorState.collectAsState().value,
+                        messageState = authViewModel.messageState.collectAsState().value,
                         onLoginClick = { email, password -> authViewModel.login(email, password) },
                         onLoginSuccess = { navController.navigate(NavigationPage.Home.route) },
                         onRegisterClick = { navController.navigate(NavigationPage.Registration.route) }
@@ -91,7 +90,7 @@ fun App() {
                 composable(NavigationPage.Registration.route) {
                     RegistrationPage(
                         authState = authState,
-                        errorState = authViewModel.errorState.collectAsState().value,
+                        messageState = authViewModel.messageState.collectAsState().value,
                         onRegisterClick = { name, email, password -> authViewModel.register(name, email, password) },
                         onRegisterSuccess = { navController.navigate(NavigationPage.Home.route) },
                         onLoginClick = { navController.navigate(NavigationPage.Login.route) }
@@ -136,7 +135,7 @@ fun App() {
                 composable(NavigationPage.UserProfile.route) {
                     UserProfilePage(
                         user = authViewModel.user.collectAsState().value,
-                        errorState = authViewModel.errorState.collectAsState().value,
+                        messageState = authViewModel.messageState.collectAsState().value,
                         onUpdateUserDetails = { name, email -> authViewModel.updateUserDetails(name, email) },
                         onUpdatePassword = { oldPassword, newPassword -> authViewModel.updatePassword(oldPassword, newPassword) },
                         onLogout = {
@@ -157,16 +156,14 @@ fun App() {
 
                     if (productId == null) {
                         ProductNotFound(
-                            errorMessage = "Помилка: продукт не знайдено",
+                            errorMessage = "При обробці продукта виникла помилка, спробуйте ще раз",
                             onBack = { navController.popBackStack() }
                         )
                     } else {
-                        val product by sharedViewModel.getProductById(productId).observeAsState()
+                        val product by sharedViewModel.getProductById(productId).collectAsState(initial = null)
 
-                        when {
-                            product == null -> {
-                                LoadingPlaceholder()
-                            }
+                        when (product) {
+                            null -> { LoadingPlaceholder() }
                             else -> {
                                 ProductDetailsPage(
                                     product = product!!,

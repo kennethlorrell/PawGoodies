@@ -18,15 +18,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.deepdark.pawgoodies.components.ErrorMessage
+import com.deepdark.pawgoodies.components.TextMessage
 import com.deepdark.pawgoodies.components.StyledTextField
 import com.deepdark.pawgoodies.data.viewmodels.AuthState
-import com.deepdark.pawgoodies.data.viewmodels.ErrorState
+import com.deepdark.pawgoodies.data.viewmodels.MessageState
 
 @Composable
 fun RegistrationPage(
     authState: AuthState,
-    errorState: ErrorState,
+    messageState: MessageState?,
     onRegisterClick: (String, String, String) -> Unit,
     onRegisterSuccess: () -> Unit,
     onLoginClick: () -> Unit
@@ -70,7 +70,7 @@ fun RegistrationPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ErrorMessage(message = errorState.message)
+        TextMessage(messageState = messageState)
 
         Button(onClick = { onRegisterClick(name, email, password) }) {
             Text("Зареєструватися")

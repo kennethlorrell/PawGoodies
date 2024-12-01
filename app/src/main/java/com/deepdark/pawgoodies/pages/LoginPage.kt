@@ -1,6 +1,5 @@
 package com.deepdark.pawgoodies.pages
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,17 +17,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.deepdark.pawgoodies.components.ErrorMessage
+import com.deepdark.pawgoodies.components.TextMessage
 import com.deepdark.pawgoodies.components.StyledTextField
 import com.deepdark.pawgoodies.data.viewmodels.AuthState
-import com.deepdark.pawgoodies.data.viewmodels.ErrorState
+import com.deepdark.pawgoodies.data.viewmodels.MessageState
 
 @Composable
 fun LoginPage(
     authState: AuthState,
-    errorState: ErrorState,
+    messageState: MessageState?,
     onLoginClick: (String, String) -> Unit,
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit
@@ -65,7 +63,7 @@ fun LoginPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ErrorMessage(message = errorState.message)
+        TextMessage(messageState = messageState)
 
         Button(onClick = { onLoginClick(email, password) }) {
             Text("Увійти")

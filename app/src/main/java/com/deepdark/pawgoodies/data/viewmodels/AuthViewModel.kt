@@ -6,6 +6,7 @@ import com.deepdark.pawgoodies.data.SessionManager
 import com.deepdark.pawgoodies.data.entities.User
 import com.deepdark.pawgoodies.data.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,11 +21,13 @@ class AuthViewModel @Inject constructor(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState
 
-    private val _errorState = MutableStateFlow(ErrorState())
-    val errorState: StateFlow<ErrorState> = _errorState
+    private val _messageState = MutableStateFlow<MessageState?>(null)
+    val messageState: StateFlow<MessageState?> = _messageState
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
+
+    private val MESSAGE_DISPLAY_DURATION = 7000L
 
     init {
         restoreSession()
@@ -36,12 +39,12 @@ class AuthViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             if (email.isBlank()) {
-                _errorState.value = ErrorState("Електронна пошта не може бути пустою")
+                showMessage("Електронна пошта не може бути пустою", MessageType.ERROR)
                 return@launch
             }
 
             if (password.isBlank()) {
-                _errorState.value = ErrorState("Пароль не може бути пустим")
+                showMessage("Пароль не може бути пустим", MessageType.ERROR)
                 return@launch
             }
 
@@ -51,9 +54,9 @@ class AuthViewModel @Inject constructor(
                 sessionManager.saveUserSession(user.id)
                 _authState.value = AuthState.Authenticated(user)
                 _user.value = user
-                _errorState.value = ErrorState(null)
+                showMessage("Вітаємо, ${user.name}", MessageType.SUCCESS)
             } else {
-                _errorState.value = ErrorState("Не знайдено користувача з такими обліковими даними \uD83D\uDE3F")
+                showMessage("Не знайдено користувача з такими обліковими даними \uD83D\uDE3F", MessageType.ERROR)
             }
         }
     }
@@ -65,24 +68,24 @@ class AuthViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             if (name.isBlank()) {
-                _errorState.value = ErrorState("Будь-ласка, вкажіть ваше ім’я")
+                showMessage("Будь-ласка, вкажіть ваше ім’я", MessageType.ERROR)
                 return@launch
             }
 
             if (email.isBlank()) {
-                _errorState.value = ErrorState("Електронна пошта не може бути пустою")
+                showMessage("Електронна пошта не може бути пустою", MessageType.ERROR)
                 return@launch
             }
 
             if (password.isBlank()) {
-                _errorState.value = ErrorState("Пароль не може бути пустим")
+                showMessage("Пароль не може бути пустим", MessageType.ERROR)
                 return@launch
             }
 
             val existingUser = userRepository.getUserByEmail(email)
 
             if (existingUser != null) {
-                _errorState.value = ErrorState("Цей email вже зайнято \uD83D\uDE3F")
+                showMessage("Цей email вже зайнято \uD83D\uDE3F", MessageType.ERROR)
                 return@launch
             }
 
@@ -96,7 +99,7 @@ class AuthViewModel @Inject constructor(
             sessionManager.saveUserSession(newUser.id)
             _authState.value = AuthState.Authenticated(newUser)
             _user.value = newUser
-            _errorState.value = ErrorState(null)
+            showMessage("Ласкаво просимо, ${newUser.name}", MessageType.SUCCESS)
         }
     }
 
@@ -114,28 +117,22 @@ class AuthViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             if (name.isBlank()) {
-                _errorState.value = ErrorState("Ім’я не може бути пустим")
+                showMessage("Ім’я не може бути пустим", MessageType.ERROR)
                 return@launch
             }
 
             if (email.isBlank()) {
-                _errorState.value = ErrorState("Електронна пошта не може бути пустою")
+                showMessage("Електронна пошта не може бути пустою", MessageType.ERROR)
                 return@launch
             }
 
-            val existingUser = userRepository.getUserByEmail(email)
             val currentUser = (_authState.value as? AuthState.Authenticated)?.user
-
-            if (existingUser?.id != currentUser?.id) {
-                _errorState.value = ErrorState("Такий email вже зайнято \uD83D\uDE3F")
-                return@launch
-            }
 
             if (currentUser != null) {
                 userRepository.updateUserDetails(currentUser.id, name, email)
             }
 
-            _errorState.value = ErrorState(null)
+            showMessage("Дані успішно оновлено", MessageType.SUCCESS)
         }
     }
 
@@ -145,7 +142,7 @@ class AuthViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             if (newPassword.isBlank()) {
-                _errorState.value = ErrorState("Новий пароль не може бути пустим")
+                showMessage("Новий пароль не може бути пустим", MessageType.ERROR)
                 return@launch
             }
 
@@ -154,9 +151,9 @@ class AuthViewModel @Inject constructor(
             if (currentUser != null) {
                 if (currentPassword == currentUser.password) {
                     userRepository.updateUserPassword(currentUser.id, newPassword)
-                    _errorState.value = ErrorState(null)
+                    showMessage("Пароль успішно оновлено", MessageType.SUCCESS)
                 } else {
-                    _errorState.value = ErrorState("Неправильний поточний пароль")
+                    showMessage("Неправильний поточний пароль", MessageType.ERROR)
                 }
             }
         }
@@ -178,6 +175,15 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+    private fun showMessage(message: String, type: MessageType) {
+        _messageState.value = MessageState(message, type)
+
+        viewModelScope.launch {
+            delay(MESSAGE_DISPLAY_DURATION)
+            _messageState.value = null
+        }
+    }
 }
 
 sealed class AuthState {
@@ -185,6 +191,13 @@ sealed class AuthState {
     data class Authenticated(val user: User, val errorMessage: String? = null) : AuthState()
 }
 
-data class ErrorState(
-    val message: String? = null
+data class MessageState(
+    val message: String = "",
+    val type: MessageType = MessageType.INFO
 )
+
+enum class MessageType {
+    SUCCESS,
+    ERROR,
+    INFO
+}

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.deepdark.pawgoodies.data.entities.Product
 import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDao {
@@ -27,12 +28,6 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE id = :productId")
     fun getProductByIdLive(productId: Int): LiveData<Product?>
 
-    @Query("SELECT * FROM products WHERE categoryId = :categoryId")
-    suspend fun getProductsByCategory(categoryId: Int): List<Product>
-
-    @Query("SELECT * FROM products WHERE manufacturerId = :manufacturerId")
-    suspend fun getProductsByManufacturer(manufacturerId: Int): List<Product>
-
     @Query("SELECT COUNT(*) FROM products")
     suspend fun getProductsCount(): Int
 
@@ -50,26 +45,27 @@ interface ProductDao {
             EXISTS (
               SELECT 1
               FROM cart_items ci
-              WHERE ci.productId = p.id
+              WHERE ci.productId = p.id AND ci.userId = :userId
             ) AS isInCart,
             COALESCE((
-              SELECT cart_items.quantity
-              FROM cart_items
-              WHERE cart_items.productId = p.id), 0
+              SELECT ci.quantity
+              FROM cart_items ci
+              WHERE ci.productId = p.id AND ci.userId = :userId), 0
             ) AS cartQuantity,
               EXISTS (
               SELECT 1
               FROM wishlist_items wi
-              WHERE wi.productId = p.id
+              WHERE wi.productId = p.id AND wi.userId = :userId
             ) AS isInWishlist
         FROM products p
         INNER JOIN categories c ON p.categoryId = c.id
         INNER JOIN manufacturers m ON p.manufacturerId = m.id
         WHERE p.id = :productId
     """)
-    fun getProductWithStateByIdLive(
+    fun getProductWithStateById(
+        userId: Int,
         productId: Int
-    ): LiveData<ProductWithState?>
+    ): Flow<ProductWithState?>
 
     @Query("""
         SELECT 
@@ -85,21 +81,23 @@ interface ProductDao {
             EXISTS (
               SELECT 1
               FROM cart_items ci
-              WHERE ci.productId = p.id
+              WHERE ci.productId = p.id AND ci.userId = :userId
             ) AS isInCart,
             EXISTS (
               SELECT 1
               FROM wishlist_items wi
-              WHERE wi.productId = p.id
+              WHERE wi.productId = p.id AND wi.userId = :userId
             ) AS isInWishlist,
             COALESCE((
-              SELECT cart_items.quantity
-              FROM cart_items
-              WHERE cart_items.productId = p.id), 0
+              SELECT ci.quantity
+              FROM cart_items ci
+              WHERE ci.productId = p.id AND ci.userId = :userId), 0
             ) AS cartQuantity
         FROM products p
         INNER JOIN categories c ON p.categoryId = c.id
         INNER JOIN manufacturers m ON p.manufacturerId = m.id
     """)
-    fun getAllProductsWithStateLive(): LiveData<List<ProductWithState>>
+    fun getAllProductsWithState(
+        userId: Int
+    ): Flow<List<ProductWithState>>
 }

@@ -1,16 +1,19 @@
 package com.deepdark.pawgoodies.data.repositories
 
-import androidx.lifecycle.LiveData
 import com.deepdark.pawgoodies.data.AppDatabase
 import com.deepdark.pawgoodies.data.entities.stateful.ProductWithState
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ProductRepository @Inject constructor(
     private val db: AppDatabase
 ) {
-    fun getAllProductsLive(): LiveData<List<ProductWithState>> = db.productDao().getAllProductsWithStateLive()
+    fun getAllProductsWithState(
+        userId: Int
+    ): Flow<List<ProductWithState>> = db.productDao().getAllProductsWithState(userId)
 
-    fun getProductByIdLive(
+    fun getProductWithStateById(
+        userId: Int,
         productId: Int
-    ): LiveData<ProductWithState?> = db.productDao().getProductWithStateByIdLive(productId)
+    ): Flow<ProductWithState?> = db.productDao().getProductWithStateById(userId, productId)
 }
